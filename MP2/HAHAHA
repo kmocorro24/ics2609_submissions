@@ -1,0 +1,118 @@
+<?php
+        session_start();
+
+        function generateCard($max)
+        {
+            return rand(1, $max);
+        }
+
+        function areCardsIdentical($card1, $card2)
+        {
+            return $card1 === $card2;
+        }
+
+        function playRound(&$points)
+        {
+            $round = isset($_SESSION['round']) ? $_SESSION['round'] : 1;
+            $card1 = generateCard(13);
+            $card2 = generateCard(13);
+
+            echo "<p>Round $round: Cards Drawn - $card1, $card2</p>";
+
+            if (areCardsIdentical($card1, $card2)) {
+                echo "<p>JACKPOT! You got identical cards!</p>";
+                echo "<form method='post'>";
+                echo "<input type='hidden' name='round' value='$round'>";
+                echo "<input type='hidden' name='card1' value='$card1'>";
+                echo "<input type='hidden' name='card2' value='$card2'>";
+                echo "<p>Choose <button type='submit' name='higher'>HIGHER</button> or <button type='submit' name='lower'>LOWER</button></p>";
+                echo "</form>";
+            } else {
+                echo "<form method='post'>";
+                echo "<input type='hidden' name='round' value='$round'>";
+                echo "<input type='hidden' name='card1' value='$card1'>";
+                echo "<input type='hidden' name='card2' value='$card2'>";
+                echo "<p>Choose <button type='submit' name='deal'>DEAL</button> or <button type='submit' name='no_deal'>NO DEAL</button></p>";
+                echo "</form>";
+            }
+            echo "<p>Current Points: $points</p><hr>";
+        }
+
+        function playGame()
+        {
+            $points = 0;
+
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $round = isset($_POST['round']) ? $_POST['round'] : 1;
+                $card1 = $_POST['card1'];
+                $card2 = $_POST['card2'];
+
+                // Display the round details only if the submitted round matches the current round
+                if ($round == $_SESSION['round']) {
+                    $card3 = generateCard(20);
+
+                    if (areCardsIdentical($card1, $card2)) {
+                        echo "<p>Third Card: $card3</p>";
+
+                        $userChoice = isset($_POST['higher']) ? 'HIGHER' : 'LOWER';
+
+                        if (($userChoice === 'HIGHER' && $card3 > $card1) || ($userChoice === 'LOWER' && $card3 < $card1)) {
+                            echo "<p>WIN! You got it right!</p>";
+                            $points += 10;
+                        } else {
+                            echo "<p>LOSE! Better luck next time.</p>";
+                        }
+                    } else {
+                        echo "<p>Third Card: $card3</p>";
+
+                        $userChoice = isset($_POST['deal']) ? 'DEAL' : 'NO DEAL';
+
+                        if ($userChoice === 'DEAL') {
+                            if ($card3 > min($card1, $card2) && $card3 < max($card1, $card2)) {
+                                echo "<p>WIN! You got it right!</p>";
+                                $points += 10;
+                            } else {
+                                echo "<p>LOSE! Better luck next time.</p>";
+                                // Deduct points only if the user clicked "DEAL" and didn't win
+                                $points -= 5;
+                                // Ensure points do not go below zero
+                                $points = max(0, $points);
+                            }
+                        } else {
+                            // Add points if the third card is not between the first and second card
+                            if ($card3 <= min($card1, $card2) || $card3 >= max($card1, $card2)) {
+                                echo "<p>NO DEAL! Points added.</p>";
+                                $points += 10;
+                            } else {
+                                echo "<p>NO DEAL! Points not added.</p>";
+                            }
+                        }
+                    }
+
+                    // Display the current points without showing the previous round details
+                    echo "<p>Current Points: $points</p><hr>";
+
+                    $round++; // Move to the next round
+
+                    if ($round > 10) {
+                        echo "<p>Game Over! Your final points: $points</p>";
+                        session_unset();
+                        session_destroy();
+                        echo "<div>Play Again? <button type='button' onclick='window.location.href=\"{$_SERVER['PHP_SELF']}\"'>Yes</button></div>";
+                        return;
+                    } else {
+                        $_SESSION['round'] = $round;
+                    }
+                }
+            }
+
+            // Display the current round
+            playRound($points);
+        }
+
+        if (!isset($_SESSION['round'])) {
+            $_SESSION['round'] = 1;
+        }
+
+        playGame();
+        ?>

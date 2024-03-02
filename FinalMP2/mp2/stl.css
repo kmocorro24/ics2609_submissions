@@ -1,0 +1,72 @@
+body {
+    font-family: MedievalSharp, sans-serif;
+    background-image: url('bg.gif');
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.logo-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 20px; /* Adjust as needed to add space around the logo */
+}
+
+.logo {
+    max-width: 35%; /* Ensure the logo doesn't exceed its original size */
+}
+
+.scroll {
+    background: url('scroll.png') center center / 800px 550px no-repeat;
+}
+
+.container {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 50px;
+    text-align: center;
+    color: #000000;
+}
+
+h1 {
+    color: #000000;
+    font-size: 24px; /* Adjust the font size as needed */
+}
+
+p {
+    margin: 10px 0;
+    font-size: 18px; /* Adjust the font size as needed */
+
+}
+
+button {
+    padding: 15px 25px; /* Adjust the padding as needed */
+    margin: 10px;
+    font-family: 'MedievalSharp';
+    font-size: 16px; /* Adjust the font size as needed */
+    cursor: pointer;
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+hr {
+    border: 1px solid #000000;
+    margin: 20px 0;
+}
+
+.medievalsharp-regular {
+    font-family: "MedievalSharp", cursive;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 16px; /* Adjust the font size as needed */
+}
